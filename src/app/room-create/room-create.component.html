@@ -1,3 +1,40 @@
-<p>
-  room-create works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="create-form col-lg-12">
+      <div class="page-header">
+        <h2>Create a Room</h2>
+      </div>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="inputRoomName" class="col-sm-2 control-label">Room Name</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputRoomName" placeholder="My Awesome Room">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputVoteCount" class="col-sm-2 control-label">Votes</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="inputVoteCount" placeholder="Number of votes for each user">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputVetoCount" class="col-sm-2 control-label">Vetos</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="inputVetoCount" placeholder="Number of vetos for each user">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputNominationCount" class="col-sm-2 control-label">Nominations</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="inputNominationCount" placeholder="How many nominations a user can make">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Create Room</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
