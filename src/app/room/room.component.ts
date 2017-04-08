@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable } from "rxjs/Rx";
+import { WebSocketSubject } from "rxjs/observable/dom/WebSocketSubject";
 
 @Component({
   selector: 'app-room',
@@ -7,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RoomComponent implements OnInit {
 
+  private subject: WebSocketSubject<MessageEvent>;
+
   constructor() { }
 
   ngOnInit() {
+    this.subject = Observable.webSocket('ws://localhost:8080/lunch-vote/socket/room');
+    this.subject.subscribe(
+      (msg) => console.log('message received: ' + msg.data),
+      (err) => console.log(err),
+      () => console.log('complete')
+    );
+  }
+
+  ngOnDestroy() {
+    this.subject.unsubscribe();
   }
 
 }
