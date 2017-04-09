@@ -7,7 +7,8 @@ import { RoomCreateComponent } from './room-create/room-create.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  { path: 'room', component: RoomComponent },
+  { path: 'room', redirectTo: '/create', pathMatch: 'full' },
+  { path: 'room/:id', component: RoomComponent },
   { path: 'create', component: RoomCreateComponent },
   {
     path: '',

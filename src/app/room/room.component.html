@@ -1,16 +1,16 @@
 <div class="room-container container-fluid">
-  <div class="row info-panel">
+  <div *ngIf="room" class="row info-panel">
     <div class="col-md-3 col-xs-6">
-      <h4>Room Name Here</h4>
+      <h4>{{room.name}}</h4>
     </div>
     <div class="col-md-3 col-xs-6">
       <h4>Time Left: 1:32</h4>
     </div>
     <div class="col-md-3 col-xs-6">
-      <h4>Votes: 3</h4>
+      <h4>Votes: {{currentVotes}}</h4>
     </div>
     <div class="col-md-3 col-xs-6">
-      <h4>Vetos: 1</h4>
+      <h4>Vetos: {{currentVetos}}</h4>
     </div>
   </div>
   <div class="row">
@@ -33,6 +33,25 @@
             <button class="btn btn-success btn-block">Vote</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>

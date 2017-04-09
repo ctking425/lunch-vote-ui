@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from "rxjs/Rx";
 import { WebSocketSubject } from "rxjs/observable/dom/WebSocketSubject";
+import { Room } from "../models/room";
+import { Votable } from "../models/votable";
 
 @Component({
   selector: 'app-room',
@@ -10,16 +13,46 @@ import { WebSocketSubject } from "rxjs/observable/dom/WebSocketSubject";
 export class RoomComponent implements OnInit {
 
   private subject: WebSocketSubject<MessageEvent>;
+  private roomId: string;
 
-  constructor() { }
+  room: Room;
+  currentVotes: number;
+  currentVetos: number;
+  currentNominations: number;
+
+  constructor(private route: ActivatedRoute, private router: Router) { }
+
+  processMessage = function(msg: MessageEvent) {
+    switch (msg.type) {
+      case "ROOM_INIT":
+        this.room = msg.data as Room;
+        this.currentVotes = this.room.maxVotes;
+        this.currentVetos = this.room.maxVetos;
+        this.currentNominations = this.room.maxNominations;
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+  nominate = function(nomination: Votable) {
+    console.log(nomination);
+  }
 
   ngOnInit() {
-    this.subject = Observable.webSocket('ws://localhost:8080/lunch-vote/socket/room');
-    this.subject.subscribe(
-      (msg) => console.log('message received: ' + msg.data),
-      (err) => console.log(err),
-      () => console.log('complete')
-    );
+
+    this.route.params.subscribe(params => {
+      this.roomId = params['id'];
+
+      console.log(this.roomId);
+      this.subject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/room/${this.roomId}`);
+      this.subject.subscribe(
+        (msg) => this.processMessage(msg),
+        (err) => console.log(err),
+        () => console.log('complete')
+      );
+    });
   }
 
   ngOnDestroy() {
