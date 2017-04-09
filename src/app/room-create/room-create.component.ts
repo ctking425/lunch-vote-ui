@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { RoomCreateService } from "../room-create.service";
+import { Room } from "../models/room";
 
 @Component({
   selector: 'app-room-create',
@@ -7,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RoomCreateComponent implements OnInit {
 
-  constructor() { }
+  constructor(private createService: RoomCreateService) { }
 
   ngOnInit() {
   }
