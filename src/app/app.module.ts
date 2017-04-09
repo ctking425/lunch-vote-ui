@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { RoomCreateComponent } from './room-create/room-create.component';
 import { RoomComponent } from './room/room.component';
 import { HomeComponent } from './home/home.component';
+import { RoomCreateService } from "./room-create.service";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,7 @@ import { HomeComponent } from './home/home.component';
     HttpModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [RoomCreateService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
