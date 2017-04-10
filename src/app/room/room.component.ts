@@ -12,13 +12,15 @@ import { Votable } from "../models/votable";
 })
 export class RoomComponent implements OnInit {
 
-  private subject: WebSocketSubject<MessageEvent>;
+  private roomSubject: WebSocketSubject<MessageEvent>;
+  private timerSubject: WebSocketSubject<MessageEvent>;
   private roomId: string;
 
   room: Room;
   currentVotes: number;
   currentVetos: number;
   currentNominations: number;
+  timer: string = 'x:xx';
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 
@@ -46,9 +48,16 @@ export class RoomComponent implements OnInit {
       this.roomId = params['id'];
 
       console.log(this.roomId);
-      this.subject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/room/${this.roomId}`);
-      this.subject.subscribe(
+      this.roomSubject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/room/${this.roomId}`);
+      this.roomSubject.subscribe(
         (msg) => this.processMessage(msg),
+        (err) => console.log(err),
+        () => console.log('complete')
+      );
+
+      this.timerSubject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/timer/${this.roomId}`);
+      this.timerSubject.subscribe(
+        (msg) => this.timer = msg.data,
         (err) => console.log(err),
         () => console.log('complete')
       );
@@ -56,7 +65,8 @@ export class RoomComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.subject.unsubscribe();
+    this.roomSubject.unsubscribe();
+    this.timerSubject.unsubscribe();
   }
 
 }

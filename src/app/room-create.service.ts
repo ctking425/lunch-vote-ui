@@ -5,7 +5,9 @@ import { Room } from "./models/room";
 @Injectable()
 export class RoomCreateService {
 
-  private headers = new Headers({'Content-Type': 'application/json'});
+  private headers = new Headers({
+    'Content-Type': 'application/json'
+  });
   private baseUrl = "http://localhost:8080/lunch-vote/services";
 
   constructor(private http: Http) { }
@@ -13,7 +15,7 @@ export class RoomCreateService {
   createRoom(room: Room): Promise<string> {
     const url = `${this.baseUrl}/room`;
     return this.http.post(url, JSON.stringify(room), {headers: this.headers})
-      .toPromise().then(res => res.json() as string)
+      .toPromise().then(resp => resp.json().roomId)
       .catch(this.handleError);
   }
 
