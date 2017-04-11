@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
 import { RoomCreateService } from "../room-create.service";
 import { Room } from "../models/room";
 
@@ -9,12 +10,15 @@ import { Room } from "../models/room";
 })
 export class RoomCreateComponent implements OnInit {
 
-  constructor(private createService: RoomCreateService) { }
+  constructor(private router: Router, private createService: RoomCreateService) { }
 
   roomName: string;
   votes: number;
   vetos: number;
   nominations: number;
+  showModal: boolean = false;
+  roomId: string;
+  roomUrl: string;
 
   ngOnInit() {
   }
@@ -29,6 +33,18 @@ export class RoomCreateComponent implements OnInit {
 
   onRoomCreate(roomId: string) {
     console.log("Room ID: "+roomId);
+    const location = window.location.href.substring(0, window.location.href.lastIndexOf('/'))
+    this.roomId = roomId;
+    this.roomUrl = `${location}/room/${roomId}`;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  goToRoom() {
+    this.router.navigate(['/room', this.roomId]);
   }
 
 }

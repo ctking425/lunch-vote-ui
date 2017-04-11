@@ -20,7 +20,7 @@ export class RoomComponent implements OnInit {
   currentVotes: number;
   currentVetos: number;
   currentNominations: number;
-  timer: string = 'x:xx';
+  timer: string = 'Not Started';
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 

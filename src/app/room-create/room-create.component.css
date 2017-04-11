@@ -1,0 +1,19 @@
+.ng-valid[required], .ng-valid.required  {
+    border-left: 5px solid #42A948; /* green */
+}
+.ng-invalid:not(form).ng-touched  {
+    border-left: 5px solid #a94442; /* red */
+}
+
+.modal {
+    display: block !important;
+    top: 20% !important;
+}
+
+.modal-title {
+    display: inline;
+}
+
+.modal-body > input {
+    width: 100%;
+}
