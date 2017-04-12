@@ -6,12 +6,22 @@
     <div class="col-md-3 col-xs-6">
       <h4>Time Left: {{timer}}</h4>
     </div>
-    <div class="col-md-3 col-xs-6">
-      <h4>Votes: {{currentVotes}}</h4>
-    </div>
-    <div class="col-md-3 col-xs-6">
-      <h4>Vetos: {{currentVetos}}</h4>
-    </div>
+    <span *ngIf="votingPeriod">
+      <div class="col-md-3 col-xs-6">
+        <h4>Votes: {{currentVotes}}</h4>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <h4>Vetos: {{currentVetos}}</h4>
+      </div>
+    </span>
+    <span *ngIf="!votingPeriod">
+      <div class="col-md-3 col-xs-6">
+        <h4>Nominations: {{currentNominations}}</h4>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <button class="btn btn-primary" (click)="showModal = true">Nominate!</button>
+      </div>
+    </span>
   </div>
   <div class="row">
     <div class="votable col-lg-3 col-sm-6 col-xs-12">
@@ -40,19 +50,28 @@
 <div *ngIf="showModal" class="modal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Nominate a Selection</h5>
-        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input *ngIf="roomUrl" [(ngModel)]="roomUrl" />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="goToRoom()">Go to Room</button>
-      </div>
+      <form (ngSubmit)="onSubmit(); nomForm.reset()" #nomForm="ngForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Make a Nomination!</h5>
+          <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="nominationName">Nomination Name</label>
+            <input type="text" [(ngModel)]="nomName" name="nomName" class="form-control" id="nominationName" placeholder="Where you want to go." required>
+          </div>
+          <div class="form-group">
+            <label for="nominationDescription">Description</label>
+            <textarea [(ngModel)]="nomDesc" name="nomDesc" class="form-control" id="nominationDescription" placeholder="Why should we want to go there?" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!nomForm.form.valid">Submit</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

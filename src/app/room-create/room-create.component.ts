@@ -25,7 +25,7 @@ export class RoomCreateComponent implements OnInit {
 
   onSubmit() {
     console.log("Submitted");
-    let room = new Room(this.roomName, this.votes, this.vetos, this.nominations);
+    let room = new Room("", this.roomName, this.votes, this.vetos, this.nominations);
     console.log(room);
     let roomId: string;
     this.createService.createRoom(room).then(id => this.onRoomCreate(id));

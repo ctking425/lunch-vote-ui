@@ -1,6 +1,9 @@
 export class Votable {
-    name: string;
-    description: string;
-    voteCount: number;
-    vetoCount: number;
+    constructor(
+        public id: string,
+        public name: string,
+        public description: string,
+        public voteCount: number,
+        public vetoCount: number,
+    ) {}
 }
