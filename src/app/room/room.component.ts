@@ -31,9 +31,19 @@ export class RoomComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router) { }
 
   processMessage = function(msg: MessageEvent) {
+    console.log(msg.data);
     switch (msg.type) {
       case "ROOM_INIT":
-        this.room = new Room(msg.data.id, msg.data.name, msg.data.maxVotes, msg.data.maxVetos, msg.data.maxNominations, msg.data.roomState, msg.data.users, msg.data.votables);
+        this.room = new Room(
+          msg.data.id, 
+          msg.data.name, 
+          msg.data.maxVotes, 
+          msg.data.maxVetos, 
+          msg.data.maxNominations, 
+          msg.data.roomState, 
+          msg.data.users, 
+          msg.data.votables
+        );
         console.log(this.room);
         this.currentVotes = this.room.maxVotes;
         this.currentVetos = this.room.maxVetos;
@@ -44,9 +54,20 @@ export class RoomComponent implements OnInit {
         this.room.addVotable(msg.data as Votable);
         console.log(this.room);
         break;
+      case "VOTE":
+        this.room.vote(msg.data);
+        break;
+      case "ROOM_STATE":
+        this.room.roomState = msg.data;
       default:
         break;
     }
+  }
+
+  vote(id: string) {
+    console.log("voted for: "+id);
+    let message = new Message("VOTE", id);
+    this.roomSubject.next(JSON.stringify(message));
   }
 
   onSubmit() {

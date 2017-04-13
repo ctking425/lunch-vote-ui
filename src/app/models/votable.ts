@@ -3,7 +3,7 @@ export class Votable {
         public id: string,
         public name: string,
         public description: string,
-        public voteCount: number,
-        public vetoCount: number,
+        public votes: number,
+        public vetos: number,
     ) {}
 }

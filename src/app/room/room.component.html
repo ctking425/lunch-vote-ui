@@ -6,7 +6,7 @@
     <div class="col-md-3 col-xs-6">
       <h4>Time Left: {{timer}}</h4>
     </div>
-    <span *ngIf="votingPeriod">
+    <span *ngIf="room.roomState == 'Voting'">
       <div class="col-md-3 col-xs-6">
         <h4>Votes: {{currentVotes}}</h4>
       </div>
@@ -14,33 +14,30 @@
         <h4>Vetos: {{currentVetos}}</h4>
       </div>
     </span>
-    <span *ngIf="!votingPeriod">
+    <span *ngIf="room.roomState == 'Nominations'">
       <div class="col-md-3 col-xs-6">
         <h4>Nominations: {{currentNominations}}</h4>
       </div>
       <div class="col-md-3 col-xs-6">
-        <button class="btn btn-primary" (click)="showModal = true">Nominate!</button>
+        <button class="btn btn-primary" (click)="showModal = true" [disabled]="room.roomState != 'Nominations'">Nominate!</button>
       </div>
     </span>
   </div>
-  <div class="row">
-    <div class="votable col-lg-3 col-sm-6 col-xs-12">
+  <div class="row" *ngIf="room">
+    <div *ngFor="let votable of room.votables" class="votable col-lg-3 col-sm-6 col-xs-12">
       <div>
         <div class="row">
           <div class="col-xs-8">
-            <h3>Noodles & Company</h3>
+            <h3>{{votable.name}}</h3>
           </div>
           <div class="col-xs-4 vote-count">
-            4
+            {{votable.votes}}
           </div>
         </div>
-        <p class="votable-desc">Everyone knows this is where we will end up anyway.</p>
+        <p class="votable-desc">{{votable.description}}</p>
         <div class="row vote-btn">
-          <div class="col-xs-6">
-            <button class="btn btn-danger btn-block">Veto</button>
-          </div>
-          <div class="col-xs-6">
-            <button class="btn btn-success btn-block">Vote</button>
+          <div class="col-xs-12">
+            <button (click)="vote(votable.id)" class="btn btn-success btn-block" [disabled]="room.roomState != 'Voting'">Vote</button>
           </div>
         </div>
       </div>

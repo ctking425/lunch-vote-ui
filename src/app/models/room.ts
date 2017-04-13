@@ -9,14 +9,19 @@ export class Room {
         public maxVetos: number,
         public maxNominations: number,
         public roomState?: string,
-        public users?: any,
-        public votables?: any
+        public users?: User[],
+        public votables?: Votable[]
     ) {}
 
     /**
      * addVotable
      */
      addVotable(v: Votable) {
-        this.votables[v.id] = v;
+        this.votables.push(v);
+    }
+
+    vote(vId: string) {
+        let v: Votable = this.votables.find(votable => votable.id == vId);
+        v.votes++;
     }
 }
