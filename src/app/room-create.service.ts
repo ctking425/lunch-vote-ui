@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
+import { environment } from "../environments/environment";
 import { Room } from "./models/room";
 
 @Injectable()
@@ -8,7 +9,7 @@ export class RoomCreateService {
   private headers = new Headers({
     'Content-Type': 'application/json'
   });
-  private baseUrl = "http://localhost:8080/lunch-vote/services";
+  private baseUrl = environment.baseUrl;
 
   constructor(private http: Http) { }
 

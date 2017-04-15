@@ -1,5 +1,7 @@
 .jumbotron {
     text-align: center;
+    background-color: #333;
+    color: #EEE;
 }
 
 .row {
@@ -10,6 +12,10 @@
     text-align: center;
 }
 
+.desc-row {
+    color: #EEE;
+}
+
 .room-btns > a {
     margin: 0 15px 10px 15px;
     width: 200px;
@@ -18,15 +24,17 @@
 .card {
     background-color: #FFF;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, .6);
-    border-radius: 5px;
+    border-radius: 7px;
     min-height: 150px;
     margin-bottom: 30px;
 }
 
 .card > h3 {
-    background-color: #EEE;
+    background-color: #333;
+    color: #EEE;
     margin: 0;
     padding: 10px;
+    border-radius: 5px 5px 0 0;
 }
 
 .card-text {

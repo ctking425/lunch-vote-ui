@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from "rxjs/Rx";
 import { WebSocketSubject } from "rxjs/observable/dom/WebSocketSubject";
+import { environment } from "../../environments/environment";
 import { Room } from "../models/room";
 import { Votable } from "../models/votable";
 import { Message } from "../models/message";
@@ -13,6 +14,8 @@ import { Message } from "../models/message";
 })
 export class RoomComponent implements OnInit {
 
+  private baseSocket: string = environment.baseWebsocketUrl;
+
   private roomSubject: WebSocketSubject<any>;
   private timerSubject: WebSocketSubject<MessageEvent>;
   private roomId: string;
@@ -21,7 +24,7 @@ export class RoomComponent implements OnInit {
   currentVotes: number;
   currentVetos: number;
   currentNominations: number;
-  timer: string = 'Not Started';
+  timer: string = 'Loading...';
   showModal: boolean = false;
   votingPeriod: boolean = false;
 
@@ -57,6 +60,9 @@ export class RoomComponent implements OnInit {
       case "VOTE":
         this.room.vote(msg.data);
         break;
+      case "VETO":
+        this.room.veto(msg.data);
+        break;
       case "ROOM_STATE":
         this.room.roomState = msg.data;
       default:
@@ -65,16 +71,31 @@ export class RoomComponent implements OnInit {
   }
 
   vote(id: string) {
-    console.log("voted for: "+id);
-    let message = new Message("VOTE", id);
-    this.roomSubject.next(JSON.stringify(message));
+    if(this.currentVotes > 0) {
+      console.log("voted for: "+id);
+      this.currentVotes--;
+      let message = new Message("VOTE", id);
+      this.roomSubject.next(JSON.stringify(message));
+    }
+  }
+
+  veto(id: string) {
+    if(this.currentVetos > 0) {
+      console.log("vetoed: "+id);
+      this.currentVetos--;
+      let message = new Message("VETO", id);
+      this.roomSubject.next(JSON.stringify(message));
+    }
   }
 
   onSubmit() {
-    console.log(this.nomName+" "+this.nomDesc);
-    this.closeModal();
-    let message = new Message("NOMINATION", new Votable("", this.nomName , this.nomDesc, 0, 0));
-    this.roomSubject.next(JSON.stringify(message));
+    if(this.currentNominations > 0) {
+      console.log(this.nomName+" "+this.nomDesc);
+      this.currentNominations--;
+      this.closeModal();
+      let message = new Message("NOMINATION", new Votable("", this.nomName , this.nomDesc, 0, 0));
+      this.roomSubject.next(JSON.stringify(message));
+    }
   }
 
   closeModal() {
@@ -88,7 +109,7 @@ export class RoomComponent implements OnInit {
 
       //Setup the websocket for the room communication
       //TODO - Need to make this url relative for PROD
-      this.roomSubject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/room/${this.roomId}`);
+      this.roomSubject = Observable.webSocket(`${this.baseSocket}/room/${this.roomId}`);
       this.roomSubject.subscribe(
         (msg) => this.processMessage(msg),
         (err) => console.log(err),
@@ -97,7 +118,7 @@ export class RoomComponent implements OnInit {
 
       //Setup the websocket for the countdown syncing
       //TODO - Need to make this url relative for PROD
-      this.timerSubject = Observable.webSocket(`ws://localhost:8080/lunch-vote/socket/timer/${this.roomId}`);
+      this.timerSubject = Observable.webSocket(`${this.baseSocket}/timer/${this.roomId}`);
       this.timerSubject.subscribe(
         (msg) => this.timer = msg.data,
         (err) => console.log(err),

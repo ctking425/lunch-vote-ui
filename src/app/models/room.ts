@@ -24,4 +24,9 @@ export class Room {
         let v: Votable = this.votables.find(votable => votable.id == vId);
         v.votes++;
     }
+
+    veto(vId: string) {
+        let v: Votable = this.votables.find(votable => votable.id == vId);
+        v.vetos++;
+    }
 }

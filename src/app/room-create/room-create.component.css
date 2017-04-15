@@ -1,8 +1,17 @@
 .ng-valid[required], .ng-valid.required  {
     border-left: 5px solid #42A948; /* green */
 }
+
 .ng-invalid:not(form).ng-touched  {
     border-left: 5px solid #a94442; /* red */
+}
+
+.page-header {
+    color: #EEE;
+}
+
+label {
+    color: #EEE;
 }
 
 .modal {
