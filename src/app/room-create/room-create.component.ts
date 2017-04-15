@@ -16,6 +16,9 @@ export class RoomCreateComponent implements OnInit {
   votes: number;
   vetos: number;
   nominations: number;
+  readyTime: number;
+  nominationTime: number;
+  votingTime: number;
   showModal: boolean = false;
   roomId: string;
   roomUrl: string;
@@ -25,7 +28,7 @@ export class RoomCreateComponent implements OnInit {
 
   onSubmit() {
     console.log("Submitted");
-    let room = new Room("", this.roomName, this.votes, this.vetos, this.nominations);
+    let room = new Room("", this.roomName, this.votes, this.vetos, this.nominations, this.readyTime, this.nominationTime, this.votingTime);
     console.log(room);
     let roomId: string;
     this.createService.createRoom(room).then(id => this.onRoomCreate(id));

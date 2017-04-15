@@ -8,6 +8,9 @@ export class Room {
         public maxVotes: number,
         public maxVetos: number,
         public maxNominations: number,
+        public readyTime?: number,
+        public nominationTime?: number,
+        public votingTime?: number,
         public roomState?: string,
         public users?: User[],
         public votables?: Votable[]

@@ -38,13 +38,16 @@ export class RoomComponent implements OnInit {
     switch (msg.type) {
       case "ROOM_INIT":
         this.room = new Room(
-          msg.data.id, 
-          msg.data.name, 
-          msg.data.maxVotes, 
-          msg.data.maxVetos, 
-          msg.data.maxNominations, 
-          msg.data.roomState, 
-          msg.data.users, 
+          msg.data.id,
+          msg.data.name,
+          msg.data.maxVotes,
+          msg.data.maxVetos,
+          msg.data.maxNominations,
+          msg.data.readyTime,
+          msg.data.nominationTime,
+          msg.data.votingTime,
+          msg.data.roomState,
+          msg.data.users,
           msg.data.votables
         );
         console.log(this.room);
