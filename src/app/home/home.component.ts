@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  showModal: boolean = false;
+  roomCode: string = '';
 
-  ngOnInit() {
+  constructor(private router: Router) { }
+
+  ngOnInit() {}
+
+  openRoomModal() {
+    this.showModal = true;
+  }
+
+  closeRoomModal() {
+    this.showModal = false;
+  }
+
+  goToRoom() {
+    this.router.navigate(['/room', this.roomCode]);
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
-import { RoomCreateService } from "../room-create.service";
+import { RoomService } from "../room.service";
 import { Room } from "../models/room";
 
 @Component({
@@ -10,7 +10,7 @@ import { Room } from "../models/room";
 })
 export class RoomCreateComponent implements OnInit {
 
-  constructor(private router: Router, private createService: RoomCreateService) { }
+  constructor(private router: Router, private roomService: RoomService) { }
 
   roomName: string;
   votes: number;
@@ -27,15 +27,12 @@ export class RoomCreateComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log("Submitted");
     let room = new Room("", this.roomName, this.votes, this.vetos, this.nominations, this.readyTime, this.nominationTime, this.votingTime);
-    console.log(room);
     let roomId: string;
-    this.createService.createRoom(room).then(id => this.onRoomCreate(id));
+    this.roomService.createRoom(room).then(id => this.onRoomCreate(id));
   }
 
   onRoomCreate(roomId: string) {
-    console.log("Room ID: "+roomId);
     const location = window.location.href.substring(0, window.location.href.lastIndexOf('/'))
     this.roomId = roomId;
     this.roomUrl = `${location}/room/${roomId}`;

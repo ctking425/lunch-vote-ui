@@ -1,16 +1,60 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { trigger, state, style, animate, transition, group, keyframes } from "@angular/animations";
 import { Observable } from "rxjs/Rx";
 import { WebSocketSubject } from "rxjs/observable/dom/WebSocketSubject";
 import { environment } from "../../environments/environment";
+import { RoomService } from "../room.service";
 import { Room } from "../models/room";
+import { User } from "../models/user";
 import { Votable } from "../models/votable";
 import { Message } from "../models/message";
 
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
-  styleUrls: ['./room.component.css']
+  styleUrls: ['./room.component.css'],
+  animations: [
+    trigger('flipIn', [
+      transition(':enter', [
+        animate(800, keyframes([
+          style({opacity: 0, transform: 'perspective(400px) rotate3d(1, 0, 0, 90deg)', offset: 0}),
+          style({transform: 'perspective(400px) rotate3d(1, 0, 0, -20deg)', offset: 0.4}),
+          style({opacity: 1, transform: 'perspective(400px) rotate3d(1, 0, 0, 10deg)',  offset: 0.6}),
+          style({opacity: 1, transform: 'perspective(400px) rotate3d(1, 0, 0, -5deg)',  offset: 0.8}),
+          style({opacity: 1, transform: 'perspective(400px) rotate3d(1, 0, 0, 0)',  offset: 1.0})
+        ]))
+      ]),
+      transition(':leave', [
+        animate(600, keyframes([
+          style({opacity: 1, offset: 0}),
+          style({opacity: 0, transform: 'scale3d(.3, .3, .3)', offset: 0.5}),
+          style({opacity: 0,  offset: 1.0})
+        ]))
+      ])
+    ]),
+    trigger('pulse', [
+      transition('* => *', [
+        animate(200, keyframes([
+          style({transform: 'scale3d(1, 1, 1)', offset: 0}),
+          style({transform: 'scale3d(1.3, 1.3, 1.3)', offset: 0.5}),
+          style({transform: 'scale3d(1, 1, 1)',  offset: 1.0})
+        ]))
+      ])
+    ]),
+    trigger('lightSpeed', [
+      transition(':enter', [
+        group([
+          animate(300, keyframes([
+            style({opacity: 0, transform: 'translate3d(100%, 0, 0) skewX(-30deg)', offset: 0}),
+            style({opacity: 1, transform: 'skewX(20deg)', offset: 0.6}),
+            style({opacity: 1, transform: 'skewX(-5deg)', offset: 0.8}),
+            style({opacity: 1, transform: 'none', offset: 1.0})
+          ]))
+        ])
+      ])
+    ])
+  ]
 })
 export class RoomComponent implements OnInit {
 
@@ -24,17 +68,21 @@ export class RoomComponent implements OnInit {
   currentVotes: number;
   currentVetos: number;
   currentNominations: number;
-  timer: string = 'Loading...';
+  timer: string = 'LOADING';
   showModal: boolean = false;
   votingPeriod: boolean = false;
-
+  resultsReady: boolean = false;
   nomName: string;
   nomDesc: string;
+  errorOccured: boolean = false;
+  errorMsg: string;
+  errorCode: number;
+  sorted: Array<Votable> = [];
+  sortedReady: Array<Votable> = [];
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  constructor(private route: ActivatedRoute, private router: Router, private roomService: RoomService) { }
 
   processMessage = function(msg: MessageEvent) {
-    console.log(msg.data);
     switch (msg.type) {
       case "ROOM_INIT":
         this.room = new Room(
@@ -47,18 +95,14 @@ export class RoomComponent implements OnInit {
           msg.data.nominationTime,
           msg.data.votingTime,
           msg.data.roomState,
-          msg.data.users,
           msg.data.votables
         );
-        console.log(this.room);
-        this.currentVotes = this.room.maxVotes;
-        this.currentVetos = this.room.maxVetos;
-        this.currentNominations = this.room.maxNominations;
+        if(msg.data.roomState == 'Complete') {
+          this.showResults();
+        }
         break;
       case "NOMINATION":
-        console.log(this.room);
         this.room.addVotable(msg.data as Votable);
-        console.log(this.room);
         break;
       case "VOTE":
         this.room.vote(msg.data);
@@ -68,6 +112,10 @@ export class RoomComponent implements OnInit {
         break;
       case "ROOM_STATE":
         this.room.roomState = msg.data;
+        if(msg.data == 'Complete') {
+          this.showResults();
+        }
+        break;
       default:
         break;
     }
@@ -75,7 +123,6 @@ export class RoomComponent implements OnInit {
 
   vote(id: string) {
     if(this.currentVotes > 0) {
-      console.log("voted for: "+id);
       this.currentVotes--;
       let message = new Message("VOTE", id);
       this.roomSubject.next(JSON.stringify(message));
@@ -84,7 +131,6 @@ export class RoomComponent implements OnInit {
 
   veto(id: string) {
     if(this.currentVetos > 0) {
-      console.log("vetoed: "+id);
       this.currentVetos--;
       let message = new Message("VETO", id);
       this.roomSubject.next(JSON.stringify(message));
@@ -93,7 +139,6 @@ export class RoomComponent implements OnInit {
 
   onSubmit() {
     if(this.currentNominations > 0) {
-      console.log(this.nomName+" "+this.nomDesc);
       this.currentNominations--;
       this.closeModal();
       let message = new Message("NOMINATION", new Votable("", this.nomName , this.nomDesc, 0, 0));
@@ -105,34 +150,81 @@ export class RoomComponent implements OnInit {
     this.showModal = false;
   }
 
+  showResults() {
+    this.sorted = this.room.votables;
+    this.sorted.sort((v1,v2) => (v2.votes-v2.vetos) - (v1.votes-v1.vetos));
+
+    setTimeout(() => {
+      this.room.votables = [];
+      setTimeout(() => {
+        this.resultsReady = true;
+      this.loopAdd(0);
+      }, 1000);
+    }, 1500);   
+  }
+
+  loopAdd(index: number) {
+    setTimeout(() => {
+      this.sortedReady.push(this.sorted[index]);
+      if(index < this.sorted.length-1) {
+        this.loopAdd(++index);
+      }
+    }, 800);
+  }
+
+  setupRoom(user: User) {
+    this.currentNominations = user.nominations;
+    this.currentVotes = user.votes;
+    this.currentVetos = user.vetos;
+
+    //Setup the websocket for the room communication
+    //TODO - Need to make this url relative for PROD
+    this.roomSubject = Observable.webSocket(`${this.baseSocket}/room/${this.roomId}?key=${user.id}`);
+    this.roomSubject.subscribe(
+      (msg) => this.processMessage(msg)
+    );
+
+    //Setup the websocket for the countdown syncing
+    //TODO - Need to make this url relative for PROD
+    this.timerSubject = Observable.webSocket(`${this.baseSocket}/timer/${this.roomId}`);
+    this.timerSubject.subscribe(
+      (msg) => this.timer = msg.data
+    );
+  }
+
+  private handleError(reason: any) {
+    switch(reason.status) {
+      case 404:
+        this.errorCode = 404;
+        this.errorMsg = "ROOM NOT FOUND";
+        this.errorOccured = true;
+        break;
+      default:
+        this.errorCode = reason.status;
+        this.errorMsg = reason.json().message;
+        this.errorOccured = true;
+        break;
+    }
+  }
+
   ngOnInit() {
     //On load we need to get the room id from the url path parameter
     this.route.params.subscribe(params => {
       this.roomId = params['id'];
 
-      //Setup the websocket for the room communication
-      //TODO - Need to make this url relative for PROD
-      this.roomSubject = Observable.webSocket(`${this.baseSocket}/room/${this.roomId}`);
-      this.roomSubject.subscribe(
-        (msg) => this.processMessage(msg),
-        (err) => console.log(err),
-        () => console.log('complete')
-      );
-
-      //Setup the websocket for the countdown syncing
-      //TODO - Need to make this url relative for PROD
-      this.timerSubject = Observable.webSocket(`${this.baseSocket}/timer/${this.roomId}`);
-      this.timerSubject.subscribe(
-        (msg) => this.timer = msg.data,
-        (err) => console.log(err),
-        () => console.log('complete')
-      );
+      if(this.roomId == null || this.roomId == '') {
+        let error = new Object({'status':404});
+        this.handleError(error);
+      } else {
+        this.roomService.joinRoom(this.roomId).then(user => this.setupRoom(user))
+          .catch(reason => this.handleError(reason));
+      }
     });
   }
 
   ngOnDestroy() {
-    this.roomSubject.unsubscribe();
-    this.timerSubject.unsubscribe();
+    if(this.roomSubject) this.roomSubject.unsubscribe();
+    if(this.timerSubject) this.timerSubject.unsubscribe();
   }
 
 }

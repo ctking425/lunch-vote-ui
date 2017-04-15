@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { environment } from "../environments/environment";
 import { Room } from "./models/room";
+import { User } from "./models/user";
 
 @Injectable()
-export class RoomCreateService {
+export class RoomService {
 
   private headers = new Headers({
     'Content-Type': 'application/json'
@@ -20,8 +21,14 @@ export class RoomCreateService {
       .catch(this.handleError);
   }
 
+  joinRoom(roomId: string) {
+    const url = `${this.baseUrl}/room/${roomId}/join`;
+    return this.http.get(url, {headers: this.headers})
+      .toPromise().then(resp => resp.json() as User)
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
     return Promise.reject(error.message || error);
   }
 

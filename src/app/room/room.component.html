@@ -23,6 +23,16 @@
       </div>
     </span>
   </div>
+  <div class="row" *ngIf="errorOccured">
+    <div class="col-xs-12">
+      <div class="big-words">
+        {{errorMsg}}
+      </div>
+      <div class="big-numbers">
+        {{errorCode}}
+      </div>
+    </div>
+  </div>
   <div class="row" *ngIf="room && room.roomState == 'Ready'">
     <div class="col-xs-12">
       <div class="big-words">
@@ -33,8 +43,8 @@
       </div>
     </div>
   </div>
-  <div class="row" *ngIf="room && room.roomState != 'Ready'">
-    <div *ngFor="let votable of room.votables" class="votable col-lg-3 col-sm-6 col-xs-12">
+  <div class="row" *ngIf="room && room.roomState != 'Ready' && !resultsReady">
+    <div *ngFor="let votable of room.votables" [@flipIn]="in" class="votable col-lg-3 col-sm-6 col-xs-12">
       <div>
         <div class="row">
           <div class="col-xs-12">
@@ -43,10 +53,10 @@
         </div>
         <p class="votable-desc">{{votable.description}}</p>
         <div class="row vote-btn">
-          <div class="col-xs-4 veto-count">
+          <div class="col-xs-4 veto-count" [@pulse]="votable.vetos">
             {{votable.vetos}}
           </div>
-          <div class="col-xs-8 vote-count">
+          <div class="col-xs-8 vote-count" [@pulse]="votable.votes">
             {{votable.votes}}
           </div>
         </div>
@@ -60,6 +70,30 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="row" *ngIf="resultsReady">
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+      <div *ngFor="let votable of sortedReady" class="votable" [@lightSpeed]="in">
+        <div>
+          <div class="row">
+            <div class="col-xs-12">
+              <h3>{{votable.name}}</h3>
+            </div>
+          </div>
+          <p class="votable-desc">{{votable.description}}</p>
+          <div class="row vote-btn">
+            <div class="col-xs-6 veto-count">
+              {{votable.vetos}}
+            </div>
+            <div class="col-xs-6 vote-count">
+              {{votable.votes}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
   </div>
 </div>
 <div *ngIf="showModal" class="modal">

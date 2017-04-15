@@ -40,3 +40,16 @@
 .card-text {
     padding: 10px;
 }
+
+.modal {
+    display: block !important;
+    top: 20% !important;
+}
+
+.modal-title {
+    display: inline;
+}
+
+.modal-body > input {
+    width: 100%;
+}

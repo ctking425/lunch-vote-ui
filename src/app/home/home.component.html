@@ -8,7 +8,7 @@
   <div class="row">
     <div class="room-btns col-sm-12">
       <a class="btn btn-success btn-lg" routerLink="/create">Create a Room</a>
-      <a class="btn btn-warning btn-lg" routerLink="/room">Join a Room</a>
+      <a class="btn btn-warning btn-lg" (click)="openRoomModal()">Join a Room</a>
     </div>
   </div>
   <div class="row">
@@ -35,7 +35,7 @@
       <div class="card">
         <h3>Join a Room</h3>
         <div class="card-text">
-          Have a room code and key? Click Join Room above and enter those values to join an existing room and place your vote. 
+          Have a room code? Click Join Room above and enter it to join an existing room and place your vote.
         </div>
       </div>
     </div>
@@ -43,8 +43,28 @@
       <div class="card">
         <h3>Cast your vote</h3>
         <div class="card-text">
-          Once your in a room you will be able to nominate choice during the alloted time period. After nomination you can cast your votes. At the end the vote results will be displayed.
+          Once your in a room you will be able to nominate choices during the alloted time period. After nomination you can cast your votes. At the end the vote the results will be displayed.
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Join a Room</h5>
+        <button type="button" class="close" (click)="closeRoomModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="roomCode">Room Code</label>
+        <input type="text" name="roomCode" id="roomCode" [(ngModel)]="roomCode" placeholder="Enter Room Code" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRoomModal()">Close</button>
+        <button type="button" class="btn btn-primary" (click)="goToRoom()">Go to Room</button>
       </div>
     </div>
   </div>

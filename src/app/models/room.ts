@@ -1,4 +1,3 @@
-import { User } from "./user";
 import { Votable } from "./votable";
 
 export class Room {
@@ -12,7 +11,6 @@ export class Room {
         public nominationTime?: number,
         public votingTime?: number,
         public roomState?: string,
-        public users?: User[],
         public votables?: Votable[]
     ) {}
 

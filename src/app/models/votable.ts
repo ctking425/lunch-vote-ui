@@ -4,6 +4,6 @@ export class Votable {
         public name: string,
         public description: string,
         public votes: number,
-        public vetos: number,
+        public vetos: number
     ) {}
 }
