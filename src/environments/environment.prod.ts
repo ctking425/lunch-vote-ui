@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  baseUrl: '/lunch-vote/services',
+  baseWebsocketUrl: '/lunch-vote/socket'
 };

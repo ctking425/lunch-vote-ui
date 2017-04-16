@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { trigger, state, style, animate, transition, group, keyframes } from "@angular/animations";
 import { Observable } from "rxjs/Rx";
@@ -82,6 +82,21 @@ export class RoomComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router, private roomService: RoomService) { }
 
+  @HostListener('window:keyup', ['$event'])
+  keyboardShortcut(event: any) {
+    if(!this.showModal) {
+      event.preventDefault();
+      event.stopPropagation();
+      switch(event.keyCode) {
+        case 78:
+          this.showModalFn();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   processMessage = function(msg: MessageEvent) {
     switch (msg.type) {
       case "ROOM_INIT":
@@ -146,21 +161,29 @@ export class RoomComponent implements OnInit {
     }
   }
 
+  showModalFn() {
+    if(!this.showModal && this.room.roomState == 'Nominations' && this.currentNominations > 0) {
+      this.showModal = true;
+    }
+  }
+
   closeModal() {
     this.showModal = false;
   }
 
   showResults() {
+
+    //Need to do a proper clone here. It's passing the ref.
     this.sorted = this.room.votables;
-    this.sorted.sort((v1,v2) => (v2.votes-v2.vetos) - (v1.votes-v1.vetos));
+    this.sorted.sort((v1,v2) => (v2.votes-(2*v2.vetos)) - (v1.votes-(2*v1.vetos)));
 
     setTimeout(() => {
       this.room.votables = [];
       setTimeout(() => {
         this.resultsReady = true;
-      this.loopAdd(0);
+        this.loopAdd(0);
       }, 1000);
-    }, 1500);   
+    }, 800);   
   }
 
   loopAdd(index: number) {
@@ -177,15 +200,17 @@ export class RoomComponent implements OnInit {
     this.currentVotes = user.votes;
     this.currentVetos = user.vetos;
 
+    if(environment.production) {
+      this.baseSocket = `ws://${window.location.hostname}:${window.location.port}${this.baseSocket}`;
+    }
+
     //Setup the websocket for the room communication
-    //TODO - Need to make this url relative for PROD
     this.roomSubject = Observable.webSocket(`${this.baseSocket}/room/${this.roomId}?key=${user.id}`);
     this.roomSubject.subscribe(
       (msg) => this.processMessage(msg)
     );
 
     //Setup the websocket for the countdown syncing
-    //TODO - Need to make this url relative for PROD
     this.timerSubject = Observable.webSocket(`${this.baseSocket}/timer/${this.roomId}`);
     this.timerSubject.subscribe(
       (msg) => this.timer = msg.data

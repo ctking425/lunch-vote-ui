@@ -10,13 +10,15 @@ import { RoomCreateComponent } from './room-create/room-create.component';
 import { RoomComponent } from './room/room.component';
 import { HomeComponent } from './home/home.component';
 import { RoomService } from "./room.service";
+import { FocusDirective } from './focus.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     RoomCreateComponent,
     RoomComponent,
-    HomeComponent
+    HomeComponent,
+    FocusDirective
   ],
   imports: [
     BrowserModule,
