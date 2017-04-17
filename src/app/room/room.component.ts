@@ -174,7 +174,7 @@ export class RoomComponent implements OnInit {
   showResults() {
 
     //Need to do a proper clone here. It's passing the ref.
-    this.sorted = this.room.votables;
+    this.sorted = this.room.votables.slice();
     this.sorted.sort((v1,v2) => (v2.votes-(2*v2.vetos)) - (v1.votes-(2*v1.vetos)));
 
     setTimeout(() => {
